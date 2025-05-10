@@ -101,7 +101,7 @@ export const generatePDF = async ({ deltaT, totalFlow, maxHead, cards, results, 
     let y = 10;
     const next = (dy = 7) => (y += dy);
   
-    doc.text('КАЛЬКУЛЯТОР НАПОЛЬНОГО ОТОПЛЕНМЯ', 10, next());
+    doc.text('КАЛЬКУЛЯТОР НАПОЛЬНОГО ОТОПЛЕНИЯ', 10, next());
     doc.setFontSize(10);
 
     if (projectName) {
