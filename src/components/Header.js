@@ -1,13 +1,14 @@
 import React from 'react';
 import Logo from "../img/logo.png";
-
+import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { toggleAuthModal, setAuthMode, logout } from '../store/slices/authSlice';
-
 
 const Header = () => {
   const { user } = useSelector(state => state.auth);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   return (
     <header className="px-4 py-3 bg-gray">
       <div className="flex flex-col items-start w-full">
@@ -17,12 +18,18 @@ const Header = () => {
             <img src={Logo} alt="Logo" className="w-15 h-12" />
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
             {user ? (
               <>
-                <span className="text-sm text-gray-700">
+                <span className="text-sm text-gray-700 leading-none pt-[2px]">
                   {user.user_metadata?.username || user.email}
                 </span>
+                <button
+                  onClick={() => navigate('/projects')}
+                  className="text-sm px-3 py-1 rounded border border-gray-500 text-gray-600 hover:bg-gray-200 transition"
+                >
+                  Проекты
+                </button>
                 <button
                   onClick={() => dispatch(logout())}
                   className="text-sm px-3 py-1 rounded border border-gray-500 text-gray-600 hover:bg-gray-200 transition"
@@ -59,7 +66,7 @@ const Header = () => {
           <div className="h-[1.5px] bg-gray-400 w-full mb-1" />
 
           <div className="flex items-center text-sm text-gray-500 space-x-4 pl-[40px] py-2">
-            <span className="lowercase">напольное<br />отопление</span>
+            <span className="lowercase cursor-pointer" onClick={() => navigate("/")}>напольное<br />отопление</span>
 
             <div className="h-8 w-[2px] bg-gray-400" />
             <span className="text-center">радиаторное<br />отопление</span>

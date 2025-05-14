@@ -1,11 +1,13 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setUser, setAwaitingConfirmation  } from './store/slices/authSlice';
-
+import { setUser, setAwaitingConfirmation } from './store/slices/authSlice';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import ProjectPage from './pages/ProjectPage';
 import LoopCardList from './components/LoopCardList';
 import Header from './components/Header';
 import AuthModal from './components/AuthModal';
 import AwaitingConfirmationModal from './components/AwaitingConfirmationModal';
+import AddProjectCard from './components/AddProjectCard';
 
 import { supabase } from './supabase';
 
@@ -14,43 +16,38 @@ const App = () => {
   const isAwaiting = useSelector(state => state.auth.isAwaitingConfirmation);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      const user = data?.session?.user;
-      if (user) {
-        dispatch(setUser(user));
-        if (isAwaiting) {
-          dispatch(setAwaitingConfirmation(false));
-          window.location.reload(); 
-        }
-      }
+    const init = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      dispatch(setUser(session?.user || null));
+    };
+  
+    init();
+  
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      dispatch(setUser(session?.user || null));
     });
-
-    const { data: listener } = supabase.auth.onAuthStateChange((event, session) => {
-      const user = session?.user;
-      if (user) {
-        dispatch(setUser(user));
-        if (isAwaiting) {
-          dispatch(setAwaitingConfirmation(false));
-          window.location.reload();
-        }
-      } else {
-        dispatch(setUser(null));
-      }
-    });
-
-    return () => listener?.subscription?.unsubscribe();
-  }, [dispatch, isAwaiting]);
+  
+    return () => subscription.unsubscribe();
+  }, []);
   
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <Header />
-      <AuthModal />
-      <AwaitingConfirmationModal />
-      <main className="p-4">
-        <LoopCardList />
-      </main>
-    </div>
+    <Router>
+      <div className="min-h-screen bg-gray-100">
+        <Header />
+        <AuthModal />
+        <AwaitingConfirmationModal />
+
+        <main className="p-4">
+          <Routes>
+            <Route path="/" element={<LoopCardList />} />
+            <Route path="/projects" element={<AddProjectCard />} />
+          </Routes>
+        </main>
+      </div>
+    </Router>
   );
 };
 

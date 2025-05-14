@@ -1,4 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import papkaImg from '../img/papka.jpg';
+import { supabase } from '../supabase';
+import { uploadPdfToFirebase } from '../utils/uploadPdfToFirebase';
 import { generatePDF } from '../utils/pdfGenerator';
 import {
     ResponsiveContainer,
@@ -160,18 +164,33 @@ const PumpCurveSmallCard = ({ curve, operatingPoint }) => (
 );
 
 const LoopCardList = () => {
+    const [showSaveModal, setShowSaveModal] = useState(false);
+    const [userFolders, setUserFolders] = useState([]);
     const [projectName, setProjectName] = useState('');
     const [cards, setCards] = useState([
         { name: "", totalLength: 70, supplyLength: 15, innerDiameter: 12, pipeStep: 150 }
     ]);
     const [deltaT, setDeltaT] = useState(5);
-
+    const user = useSelector((state) => state.auth.user);
     const addCard = () => setCards(prev => [
         ...prev,
         { name: "", totalLength: 70, supplyLength: 15, innerDiameter: 12, pipeStep: 150 }
     ]);
     const updateCard = (index, data) => setCards(cards.map((c, i) => i === index ? data : c));
     const removeCard = index => setCards(cards.filter((_, i) => i !== index));
+
+    useEffect(() => {
+        const fetchFolders = async () => {
+            if (!user) return;
+            const { data, error } = await supabase
+                .from('projects')
+                .select('*')
+                .eq('user_id', user.id)
+                .order('created_at', { ascending: false });
+            if (!error) setUserFolders(data);
+        };
+        fetchFolders();
+    }, [user]);
 
     const results = cards.map((c) => {
         const totalLength = parseFloat(c.totalLength) || 0;
@@ -243,6 +262,33 @@ const LoopCardList = () => {
         ]
     };
 
+    const handleSaveToFolder = async (projectId) => {
+        try {
+            const firstNamedCard = cards.find(c => c.name?.trim());
+            const fileName = `${firstNamedCard?.name || projectName || 'calc'}.pdf`;
+    
+            const pdfBlob = await generatePDF({
+                deltaT,
+                totalFlow,
+                maxHead,
+                cards,
+                results,
+                projectName,
+                asBlob: true,
+            });
+    
+            const file = new File([pdfBlob], fileName, { type: 'application/pdf' });
+    
+            const downloadUrl = await uploadPdfToFirebase(user.id, projectId, file);
+            console.log('✅ Загружено! Ссылка:', downloadUrl);
+    
+            alert('PDF успешно загружен!');
+            setShowSaveModal(false);
+        } catch (err) {
+            console.error('❌ Ошибка при загрузке PDF:', err);
+        }
+    };
+    
     return (
         <div className="max-w-10xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-wrap justify-center sm:justify-start gap-4 items-start mb-4">
@@ -284,6 +330,13 @@ const LoopCardList = () => {
                     Отчет PDF
                 </button>
 
+                <button
+                    onClick={() => setShowSaveModal(true)}
+                    className="bg-white border text-gray-700 font-semibold text-sm rounded-xl px-4 py-3 w-full max-w-[220px] min-h-[75px] flex items-center justify-center transition duration-200 shadow"
+                >
+                    Сохранить
+                </button>
+
             </div>
 
 
@@ -312,6 +365,25 @@ const LoopCardList = () => {
                     />
                 ))}
             </div>
+            {showSaveModal && (
+                <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50 px-4">
+                    <div className="bg-white border border-black rounded-xl p-4 w-full max-w-md max-h-[400px] overflow-y-auto">
+                        <h2 className="text-lg font-semibold text-center mb-4">Выберите папку</h2>
+                        <div className="flex flex-col gap-3">
+                            {userFolders.map((folder, index) => (
+                                <div
+                                    key={index}
+                                    onClick={() => handleSaveToFolder(folder.id)}
+                                    className="flex items-center gap-3 cursor-pointer hover:bg-gray-100 px-2 py-1 rounded"
+                                >
+                                    <img src={papkaImg} alt="Папка" className="w-8 h-8 object-contain" />
+                                    <span className="text-sm text-gray-700">{folder.name}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
