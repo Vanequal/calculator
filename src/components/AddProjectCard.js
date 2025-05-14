@@ -8,7 +8,7 @@ import { storage } from '../firebase'; // твой firebase.js
 
 const AddProjectCard = () => {
     const [activeProjectId, setActiveProjectId] = useState(null);
-    const [pdfUrl, setPdfUrl] = useState(null);
+    const [pdfList, setPdfList] = useState([]);
     const navigate = useNavigate();
     const [projects, setProjects] = useState([]);
     const [showForm, setShowForm] = useState(false);
@@ -27,26 +27,26 @@ const AddProjectCard = () => {
 
     const handleAddProject = async () => {
         if (!user) return;
-      
+
         const { data, error } = await supabase.from('projects').insert([{
-          user_id: user.id,
-          name: form.name,
-          surname: form.surname,
-          address: form.address,
-          phone: form.phone,
+            user_id: user.id,
+            name: form.name,
+            surname: form.surname,
+            address: form.address,
+            phone: form.phone,
         }]);
-      
+
         console.log('add project result:', { data, error });
-      
+
         if (!error) {
-          setProjects((prev) => [...prev, { ...form, id: data?.[0]?.id || Math.random() }]);
-          setForm({ name: '', surname: '', address: '', phone: '' });
-          setShowForm(false);
+            setProjects((prev) => [...prev, { ...form, id: data?.[0]?.id || Math.random() }]);
+            setForm({ name: '', surname: '', address: '', phone: '' });
+            setShowForm(false);
         } else {
-          alert('Ошибка: ' + error.message);
+            alert('Ошибка: ' + error.message);
         }
-      };
-      
+    };
+
     useEffect(() => {
         const fetchProjects = async () => {
             if (!user) return;
@@ -70,7 +70,7 @@ const AddProjectCard = () => {
         try {
             const listRef = ref(storage, `${user.id}/${projectId}`);
             const result = await listAll(listRef);
-    
+
             if (result.items.length > 0) {
                 const pdfRef = result.items[0];
                 const url = await getDownloadURL(pdfRef);
@@ -135,45 +135,51 @@ const AddProjectCard = () => {
                 </div>
             )}
 
-{projects.map((proj) => (
-    <div key={proj.id} className="flex flex-col gap-1">
-        <div
-            className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition"
-            onClick={async () => {
-                setActiveProjectId(proj.id);
-                try {
-                    const listRef = ref(storage, `${user.id}/${proj.id}`);
-                    const result = await listAll(listRef);
+            {projects.map((proj) => (
+                <div key={proj.id} className="flex flex-col gap-1">
+                    <div
+                        className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition"
+                        onClick={async () => {
+                            setActiveProjectId(proj.id);
+                            try {
+                                const listRef = ref(storage, `${user.id}/${proj.id}`);
+                                const result = await listAll(listRef);
 
-                    if (result.items.length > 0) {
-                        const fileRef = result.items[0];
-                        const url = await getDownloadURL(fileRef);
-                        setPdfUrl({ name: fileRef.name, url });
-                    } else {
-                        setPdfUrl(null);
-                    }
-                } catch (err) {
-                    console.error('Ошибка загрузки PDF из Firebase:', err);
-                    setPdfUrl(null);
-                }
-            }}
-        >
-            <img src={papkaImg} alt="Папка" className="w-8 h-8 object-contain" />
-            <span className="text-sm text-gray-600">{proj.name}</span>
-        </div>
+                                const urls = await Promise.all(
+                                    result.items.map(async (fileRef) => {
+                                        const url = await getDownloadURL(fileRef);
+                                        return { name: fileRef.name, url };
+                                    })
+                                );
 
-        {activeProjectId === proj.id && pdfUrl && (
-            <a
-                href={pdfUrl.url}
-                target="_blank"
-                rel="noreferrer"
-                className="ml-10 text-blue-600 underline text-sm"
-            >
-                {pdfUrl.name}
-            </a>
-        )}
-    </div>
-))}
+                                setPdfList(urls);
+                            } catch (err) {
+                                console.error('Ошибка загрузки PDF из Firebase:', err);
+                                setPdfList([]);
+                            }
+                        }}
+                    >
+                        <img src={papkaImg} alt="Папка" className="w-8 h-8 object-contain" />
+                        <span className="text-sm text-gray-600">{proj.name}</span>
+                    </div>
+
+                    {activeProjectId === proj.id && pdfList.length > 0 && (
+                        <div className="ml-10 flex flex-col gap-1 mt-1">
+                            {pdfList.map((pdf, idx) => (
+                                <a
+                                    key={idx}
+                                    href={pdf.url}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="text-blue-600 underline text-sm"
+                                >
+                                    {pdf.name}
+                                </a>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            ))}
 
         </div>
     );
