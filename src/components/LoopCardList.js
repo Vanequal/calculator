@@ -343,7 +343,7 @@ const LoopCardList = () => {
             </div>
 
 
-            <div className="flex flex-wrap justify-center sm:justify-start gap-4 mb-3 ml-8">
+            <div className="flex flex-wrap justify-center sm:justify-start gap-4 mb-3 ml-8 mt-2">
                 {cards.map((card, index) => (
                     <LoopCard key={index} index={index} data={card} updateData={updateCard} removeData={removeCard} />
                 ))}
