@@ -10,8 +10,8 @@ const Header = () => {
   const navigate = useNavigate();
 
   return (
-    <header className="px-4 py-3 bg-gray">
-      <div className="flex flex-col items-start w-full">
+    <header className="px-4 py-3 bg-gray w-full flex justify-center">
+        <div className="flex flex-col items-start w-full max-w-[1200px] px-4">
 
         <div className="flex items-center justify-between w-full mb-2">
           <div className="flex items-center gap-3">
