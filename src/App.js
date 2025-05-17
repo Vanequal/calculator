@@ -20,18 +20,18 @@ const App = () => {
       const { data: { session } } = await supabase.auth.getSession();
       dispatch(setUser(session?.user || null));
     };
-  
+
     init();
-  
+
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       dispatch(setUser(session?.user || null));
     });
-  
+
     return () => subscription.unsubscribe();
   }, []);
-  
+
 
   return (
     <Router>
@@ -40,12 +40,15 @@ const App = () => {
         <AuthModal />
         <AwaitingConfirmationModal />
 
-        <main className="p-4">
-          <Routes>
-            <Route path="/" element={<LoopCardList />} />
-            <Route path="/projects" element={<AddProjectCard />} />
-          </Routes>
+        <main className="p-4 flex justify-center">
+          <div className="w-full max-w-[1200px]">
+            <Routes>
+              <Route path="/" element={<LoopCardList />} />
+              <Route path="/projects" element={<AddProjectCard />} />
+            </Routes>
+          </div>
         </main>
+
       </div>
     </Router>
   );
