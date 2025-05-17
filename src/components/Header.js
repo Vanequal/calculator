@@ -17,7 +17,6 @@ const Header = () => {
           <div className="flex items-center gap-3">
             <img src={Logo} alt="Logo" className="w-15 h-12" />
           </div>
-
           <div className="flex gap-2 items-center">
             {user ? (
               <>
@@ -63,23 +62,24 @@ const Header = () => {
         </div>
 
         <div className="relative w-full">
-          <div className="h-[1.5px] bg-gray-400 w-full mb-1" />
+          <hr className="h-[1.5px] w-full bg-gray-400" />
 
-          <div className="flex items-center text-sm text-gray-500 space-x-4 pl-[40px] py-2">
-            <span className="lowercase cursor-pointer" onClick={() => navigate("/")}>напольное<br />отопление</span>
+          <div className="flex items-center text-sm text-gray-500 space-x-4 pl-5 py-2">
+            <span className="cursor-pointer" onClick={() => navigate("/")}>Напольное отопление</span>
 
-            <div className="h-8 w-[2px] bg-gray-400" />
-            <span className="text-center">радиаторное<br />отопление</span>
+            <div className="w-px h-9 bg-gray-400" />
+            <span className="text-center">Радиаторное отопление</span>
 
-            <div className="h-8 w-[2px] bg-gray-400" />
-            <span className="text-center">водоснабжение</span>
+            <div className="w-px h-9 bg-gray-400" />
+            <span className="text-center">Водоснабжение</span>
 
-            <div className="h-8 w-[2px] bg-gray-400" />
-            <span className="text-center">котельная</span>
+            <div className="w-px h-9 bg-gray-400" />
+            <span className="text-center">Котельная</span>
           </div>
 
-          <div className="h-[1.5px] bg-gray-400 w-full mt-1" />
+          <hr className="h-[1.5px] w-full bg-gray-400" />
         </div>
+
       </div>
     </header>
   );

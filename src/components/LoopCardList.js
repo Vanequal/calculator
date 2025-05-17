@@ -266,7 +266,7 @@ const LoopCardList = () => {
         try {
             const firstNamedCard = cards.find(c => c.name?.trim());
             const fileName = `${firstNamedCard?.name || projectName || 'calc'}.pdf`;
-    
+
             const pdfBlob = await generatePDF({
                 deltaT,
                 totalFlow,
@@ -276,19 +276,19 @@ const LoopCardList = () => {
                 projectName,
                 asBlob: true,
             });
-    
+
             const file = new File([pdfBlob], fileName, { type: 'application/pdf' });
-    
+
             const downloadUrl = await uploadPdfToFirebase(user.id, projectId, file);
             console.log('✅ Загружено! Ссылка:', downloadUrl);
-    
+
             alert('PDF успешно загружен!');
             setShowSaveModal(false);
         } catch (err) {
             console.error('❌ Ошибка при загрузке PDF:', err);
         }
     };
-    
+
     return (
         <div className="max-w-10xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-wrap justify-center sm:justify-start gap-4 items-start mb-4">
@@ -296,10 +296,9 @@ const LoopCardList = () => {
                 <FlowRateChartCard data={results} />
             </div>
 
-            <div className="flex flex-wrap justify-center sm:justify-start gap-4 items-start mb-1 ml-8">
+            <div className="flex flex-wrap justify-center sm:justify-start gap-4 items-start ml-8">
                 <TempDeltaCard value={deltaT} onChange={setDeltaT} />
-                <div className="bg-white shadow rounded-xl p-2 w-full max-w-[220px]">
-                    <div className="text-sm font-semibold text-center mb-2">Название</div>
+                <div className="bg-white shadow rounded-xl p-2 w-full max-w-[220px] h-[75px] flex items-center justify-center">
                     <input
                         type="text"
                         placeholder="Введите название"
@@ -308,10 +307,13 @@ const LoopCardList = () => {
                         className="border border-gray-300 rounded-md p-1 text-sm w-full text-center"
                     />
                 </div>
-                <div className="bg-white shadow rounded-xl py-2 w-full max-w-[220px]">
-                    <div className="text-sm font-semibold text-center mb-2">{projectName || 'Общие итоги'}</div>
-                    <div className="text-xs text-gray-700 text-center">Суммарный расход: <b>{totalFlow.toFixed(3)}</b> м³/ч</div>
-                    <div className="text-xs text-gray-700 text-center">Макс. сопротивление: <b>{maxHead.toFixed(2)}</b> м вод. ст.</div>
+                <div className="bg-white shadow rounded-xl w-full max-w-[220px] h-[75px] flex flex-col items-center justify-center">
+                    <div className="text-xs text-gray-700 text-center">
+                        Суммарный расход: <b>{totalFlow.toFixed(3)}</b> м³/ч
+                    </div>
+                    <div className="text-xs text-gray-700 text-center">
+                        Макс. сопротивление: <b>{maxHead.toFixed(2)}</b> м вод. ст.
+                    </div>
                 </div>
 
                 <button
@@ -325,14 +327,15 @@ const LoopCardList = () => {
                             projectName,
                         })
                     }
-                    className="bg-white border border-gray-400 text-gray-700 font-semibold text-sm rounded-xl px-4 py-3 w-full max-w-[220px] min-h-[75px] flex items-center justify-center transition duration-200 hover:border-blue-500 hover:bg-blue-100 hover:text-blue-600 shadow"
+                    className="bg-gray-100 text-gray-800 font-semibold text-sm rounded-xl px-4 py-3 w-full max-w-[220px] min-h-[75px] flex items-center justify-center transition duration-200 hover:bg-gray-200 shadow"
                 >
-                    Отчет PDF
+                    Скачать отчет PDF
                 </button>
+
 
                 <button
                     onClick={() => setShowSaveModal(true)}
-                    className="bg-white border text-gray-700 font-semibold text-sm rounded-xl px-4 py-3 w-full max-w-[220px] min-h-[75px] flex items-center justify-center transition duration-200 shadow"
+                    className="bg-gray-100 text-gray-800 font-semibold text-sm rounded-xl px-4 py-3 w-full max-w-[220px] min-h-[75px] flex items-center justify-center transition duration-200 hover:bg-gray-200 shadow"
                 >
                     Сохранить
                 </button>
@@ -340,7 +343,7 @@ const LoopCardList = () => {
             </div>
 
 
-            <div className="flex flex-wrap justify-center sm:justify-start gap-4 mb-6 ml-8">
+            <div className="flex flex-wrap justify-center sm:justify-start gap-4 mb-3 ml-8">
                 {cards.map((card, index) => (
                     <LoopCard key={index} index={index} data={card} updateData={updateCard} removeData={removeCard} />
                 ))}
