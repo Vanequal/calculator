@@ -1,5 +1,6 @@
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { storage } from '../firebase';
+import { generatePDF } from './pdfGenerator';
 
 const handleSharePDF = async () => {
   try {
@@ -25,8 +26,6 @@ const handleSharePDF = async () => {
         text: 'Ссылка на скачивание файла:',
         url,
       });
-
-      // 5. После отправки — удаляем файл
       await deleteObject(storageRef);
     } else {
       alert('Функция "Поделиться" недоступна на этом устройстве.');
