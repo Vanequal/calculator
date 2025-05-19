@@ -4,6 +4,8 @@ import papkaImg from '../img/papka.jpg';
 import { supabase } from '../supabase';
 import { uploadPdfToFirebase } from '../utils/uploadPdfToFirebase';
 import { generatePDF } from '../utils/pdfGenerator';
+import handleSharePDF from '../utils/handleSharePDF';
+
 import {
     ResponsiveContainer,
     CartesianGrid,
@@ -341,10 +343,16 @@ const LoopCardList = () => {
                     >
                         Сохранить
                     </button>
+
+                    <button
+                        onClick={handleSharePDF}
+                        className="bg-gray-100 text-gray-800 font-semibold text-sm rounded-xl px-3 py-3 min-h-[70px] w-full max-w-[680px] flex items-center justify-center transition duration-200 hover:bg-gray-200 shadow"
+                    >
+                        Отправить
+                    </button>
+
                 </div>
             </div>
-
-
 
             <div className="flex flex-wrap justify-center sm:justify-start gap-4 mb-3 ml-7 mt-2">
                 {cards.map((card, index) => (

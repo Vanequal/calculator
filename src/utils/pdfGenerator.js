@@ -260,9 +260,11 @@ export const generatePDF = async ({ deltaT, totalFlow, maxHead, cards, results, 
   doc.setFont('DejaVuSans', 'normal');
   doc.text('Сформировано на loop-calculator', 10, doc.internal.pageSize.getHeight() - 10);
   if (asBlob) {
-    return doc.output('blob');
-  } else {
-    doc.save('loop-calculator-report.pdf');
+    const blob = doc.output('blob');
+    return {
+      blob,
+      filename: `report-${Date.now()}.pdf`,
+    };
   }
-
+  
 };
