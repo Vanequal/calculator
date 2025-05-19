@@ -345,15 +345,7 @@ const LoopCardList = () => {
                     </button>
 
                     <button
-                        onClick={handleSharePDF({
-                            deltaT,
-                            totalFlow,
-                            maxHead,
-                            cards,
-                            results,
-                            projectName,
-                            user,
-                        })}
+                        onClick={handleSharePDF}
                         className="bg-gray-100 text-gray-800 font-semibold text-sm rounded-xl px-3 py-3 min-h-[70px] w-full max-w-[680px] flex items-center justify-center transition duration-200 hover:bg-gray-200 shadow"
                     >
                         Отправить
