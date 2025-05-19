@@ -180,8 +180,8 @@ const AddProjectCard = () => {
                                             if (navigator.share) {
                                                 try {
                                                     await navigator.share({
-                                                        title: 'Документ проекта',
-                                                        text: 'Смотри файл:',
+                                                        title: 'PDF отчет из GalfDesign',
+                                                        text: 'Ссылка на скачивание файла:',
                                                         url: pdf.url,
                                                     });
                                                 } catch (err) {
