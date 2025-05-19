@@ -1,5 +1,5 @@
-import React from 'react';
-import Logo from "../img/logo.png";
+import React, { useState } from 'react';
+import Logo from '../img/logo.png';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { toggleAuthModal, setAuthMode, logout } from '../store/slices/authSlice';
@@ -9,15 +9,30 @@ const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const navItems = [
+    { label: 'Напольное отопление', path: '/' },
+    { label: 'Радиаторное отопление', path: '/radiator' },
+    { label: 'Водоснабжение', path: '/water' },
+    { label: 'Котельная', path: '/boiler' },
+  ];
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const handlePrev = () => {
+    setActiveIndex((prev) => (prev - 1 + navItems.length) % navItems.length);
+  };
+  const handleNext = () => {
+    setActiveIndex((prev) => (prev + 1) % navItems.length);
+  };
+
   return (
     <header className="px-4 py-3 bg-gray w-full flex justify-center">
-        <div className="flex flex-col items-start w-full max-w-[1200px] px-4">
+      <div className="flex flex-col w-full max-w-[1200px] px-4">
 
-        <div className="flex items-center justify-between w-full mb-2">
-          <div className="flex items-center gap-3">
-            <img src={Logo} alt="Logo" className="w-15 h-12" />
-          </div>
-          <div className="flex gap-2 items-center">
+        {/* Верхняя часть: логотип + кнопки */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between items-center gap-2 mb-3">
+          <img src={Logo} alt="Logo" className="w-15 h-12" />
+
+          <div className="flex flex-wrap gap-2 items-center justify-center">
             {user ? (
               <>
                 <span className="text-sm text-gray-700 leading-none pt-[2px]">
@@ -61,20 +76,44 @@ const Header = () => {
           </div>
         </div>
 
-        <div className="relative w-full">
+        {/* DESKTOP nav */}
+        <div className="relative w-full hidden sm:flex flex-col">
           <hr className="h-[1.5px] w-full bg-gray-400" />
 
-          <div className="flex items-center text-sm text-gray-500 space-x-4 pl-5 py-2">
+          <div className="flex items-center text-sm text-gray-500 space-x-4 pl-2 py-2">
             <span className="cursor-pointer" onClick={() => navigate("/")}>Напольное отопление</span>
-
             <div className="w-px h-9 bg-gray-400" />
-            <span className="text-center">Радиаторное отопление</span>
-
+            <span>Радиаторное отопление</span>
             <div className="w-px h-9 bg-gray-400" />
-            <span className="text-center">Водоснабжение</span>
-
+            <span>Водоснабжение</span>
             <div className="w-px h-9 bg-gray-400" />
-            <span className="text-center">Котельная</span>
+            <span>Котельная</span>
+          </div>
+
+          <hr className="h-[1.5px] w-full bg-gray-400" />
+        </div>
+
+        {/* MOBILE nav */}
+        <div className="sm:hidden w-full">
+          <hr className="h-[1.5px] w-full bg-gray-400" />
+
+          <div className="flex items-center justify-center py-3 gap-4">
+            {/* Бумеранг влево */}
+            <button onClick={handlePrev} className="w-6 h-6">
+              <div className="w-full h-full border-t-2 border-r-2 border-gray-500 transform rotate-[-135deg] scale-75" />
+            </button>
+
+            <span
+              onClick={() => navigate(navItems[activeIndex].path)}
+              className="text-sm text-gray-700 font-medium cursor-pointer text-center"
+            >
+              {navItems[activeIndex].label}
+            </span>
+
+            {/* Бумеранг вправо */}
+            <button onClick={handleNext} className="w-6 h-6">
+              <div className="w-full h-full border-t-2 border-r-2 border-gray-500 transform rotate-[45deg] scale-75" />
+            </button>
           </div>
 
           <hr className="h-[1.5px] w-full bg-gray-400" />

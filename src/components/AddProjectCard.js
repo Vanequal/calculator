@@ -166,15 +166,36 @@ const AddProjectCard = () => {
                     {activeProjectId === proj.id && pdfList.length > 0 && (
                         <div className="ml-10 flex flex-col gap-1 mt-1">
                             {pdfList.map((pdf, idx) => (
-                                <a
-                                    key={idx}
-                                    href={pdf.url}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="text-blue-600 underline text-sm"
-                                >
-                                    {pdf.name}
-                                </a>
+                                <div key={idx} className="flex items-center gap-2">
+                                    <a
+                                        href={pdf.url}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="text-blue-600 underline text-sm"
+                                    >
+                                        {pdf.name}
+                                    </a>
+                                    <button
+                                        onClick={async () => {
+                                            if (navigator.share) {
+                                                try {
+                                                    await navigator.share({
+                                                        title: 'Документ проекта',
+                                                        text: 'Смотри файл:',
+                                                        url: pdf.url,
+                                                    });
+                                                } catch (err) {
+                                                    console.error('Ошибка при отправке:', err);
+                                                }
+                                            } else {
+                                                alert('Функция отправки недоступна на этом устройстве.');
+                                            }
+                                        }}
+                                        className="text-sm text-gray-600 border border-gray-400 px-2 py-0.5 rounded hover:bg-gray-100 transition"
+                                    >
+                                        Отправить
+                                    </button>
+                                </div>
                             ))}
                         </div>
                     )}

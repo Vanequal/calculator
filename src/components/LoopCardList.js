@@ -18,7 +18,7 @@ import {
 } from 'recharts';
 
 const TempDeltaCard = ({ value, onChange }) => (
-    <div className="bg-white shadow rounded-xl p-2 w-full max-w-[220px] mb-4">
+    <div className="bg-white shadow rounded-xl p-2 w-full max-w-[220px]">
         <div className="text-sm font-semibold text-center mb-2">ΔT (°C)</div>
         <div className="flex items-center justify-center gap-1">
             <button onClick={() => onChange(Math.max(2, value - 1))} className="px-2 py-1 text-sm bg-gray-200 rounded">-</button>
@@ -296,9 +296,10 @@ const LoopCardList = () => {
                 <FlowRateChartCard data={results} />
             </div>
 
-            <div className="flex flex-wrap justify-center sm:justify-start gap-4 items-start ml-8">
+            <div className="flex flex-wrap justify-center sm:justify-start gap-4 items-start pl-6">
                 <TempDeltaCard value={deltaT} onChange={setDeltaT} />
-                <div className="bg-white shadow rounded-xl p-2 w-full max-w-[220px] h-[75px] flex items-center justify-center">
+
+                <div className="bg-white shadow rounded-xl p-2 h-[75px] w-full max-w-[220px] flex items-center justify-center">
                     <input
                         type="text"
                         placeholder="Введите название"
@@ -307,7 +308,8 @@ const LoopCardList = () => {
                         className="border border-gray-300 rounded-md p-1 text-sm w-full text-center"
                     />
                 </div>
-                <div className="bg-white shadow rounded-xl w-full max-w-[220px] h-[75px] flex flex-col items-center justify-center">
+
+                <div className="bg-white shadow rounded-xl h-[75px] w-full max-w-[220px] flex flex-col items-center justify-center">
                     <div className="text-xs text-gray-700 text-center">
                         Суммарный расход: <b>{totalFlow.toFixed(3)}</b> м³/ч
                     </div>
@@ -316,34 +318,35 @@ const LoopCardList = () => {
                     </div>
                 </div>
 
-                <button
-                    onClick={() =>
-                        generatePDF({
-                            deltaT,
-                            totalFlow,
-                            maxHead,
-                            cards,
-                            results,
-                            projectName,
-                        })
-                    }
-                    className="bg-gray-100 text-gray-800 font-semibold text-sm rounded-xl px-4 py-3 w-full max-w-[220px] min-h-[75px] flex items-center justify-center transition duration-200 hover:bg-gray-200 shadow"
-                >
-                    Скачать отчет PDF
-                </button>
+                <div className="flex gap-4 w-full justify-center sm:justify-start mb-4">
+                    <button
+                        onClick={() =>
+                            generatePDF({
+                                deltaT,
+                                totalFlow,
+                                maxHead,
+                                cards,
+                                results,
+                                projectName,
+                            })
+                        }
+                        className="bg-gray-100 text-gray-800 font-semibold text-sm rounded-xl px-3 py-3 min-h-[70px] w-full max-w-[340px] flex items-center justify-center transition duration-200 hover:bg-gray-200 shadow"
+                    >
+                        Скачать отчет PDF
+                    </button>
 
-
-                <button
-                    onClick={() => setShowSaveModal(true)}
-                    className="bg-gray-100 text-gray-800 font-semibold text-sm rounded-xl px-4 py-3 w-full max-w-[220px] min-h-[75px] flex items-center justify-center transition duration-200 hover:bg-gray-200 shadow"
-                >
-                    Сохранить
-                </button>
-
+                    <button
+                        onClick={() => setShowSaveModal(true)}
+                        className="bg-gray-100 text-gray-800 font-semibold text-sm rounded-xl px-3 py-3 min-h-[70px] w-full max-w-[340px] flex items-center justify-center transition duration-200 hover:bg-gray-200 shadow"
+                    >
+                        Сохранить
+                    </button>
+                </div>
             </div>
 
 
-            <div className="flex flex-wrap justify-center sm:justify-start gap-4 mb-3 ml-8 mt-2">
+
+            <div className="flex flex-wrap justify-center sm:justify-start gap-4 mb-3 ml-7 mt-2">
                 {cards.map((card, index) => (
                     <LoopCard key={index} index={index} data={card} updateData={updateCard} removeData={removeCard} />
                 ))}
@@ -355,7 +358,7 @@ const LoopCardList = () => {
                 </button>
             </div>
 
-            <div className="flex flex-wrap justify-center sm:justify-start gap-4 ml-8">
+            <div className="flex flex-wrap justify-center sm:justify-start gap-4 ml-7">
                 {results.map((res, index) => (
                     <ResultCard
                         key={index}
