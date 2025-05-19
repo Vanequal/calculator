@@ -2,7 +2,7 @@ import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage
 import { storage } from '../firebase';
 import { generatePDF } from './pdfGenerator';
 
-const handleSharePDF = async () => {
+const handleSharePDF = async ({ deltaT, totalFlow, maxHead, cards, results, projectName, user }) => {
   try {
     const { blob, filename } = await generatePDF({
       deltaT,
