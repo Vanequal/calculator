@@ -5,6 +5,8 @@ import { supabase } from '../supabase';
 import { uploadPdfToFirebase } from '../utils/uploadPdfToFirebase';
 import { generatePDF } from '../utils/pdfGenerator';
 import handleSharePDF from '../utils/handleSharePDF';
+import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
+import { storage } from '../firebase';
 
 import {
     ResponsiveContainer,
@@ -169,6 +171,9 @@ const LoopCardList = () => {
     const [showSaveModal, setShowSaveModal] = useState(false);
     const [userFolders, setUserFolders] = useState([]);
     const [projectName, setProjectName] = useState('');
+    const [shareUrl, setShareUrl] = useState(null);
+    const [shareRef, setShareRef] = useState(null);
+    const [showShareModal, setShowShareModal] = useState(false);
     const [cards, setCards] = useState([
         { name: "", totalLength: 70, supplyLength: 15, innerDiameter: 12, pipeStep: 150 }
     ]);
@@ -291,6 +296,54 @@ const LoopCardList = () => {
         }
     };
 
+    const handleGenerateAndUploadPDF = async () => {
+        const { blob, filename } = await generatePDF({
+            deltaT,
+            totalFlow,
+            maxHead,
+            cards,
+            results,
+            projectName,
+            asBlob: true,
+        });
+
+        const path = `${user.id}/temp/${filename}`;
+        const storageRef = ref(storage, path);
+        await uploadBytes(storageRef, blob);
+        const url = await getDownloadURL(storageRef);
+
+        return { url, storageRef };
+    };
+
+    const handlePrepareShare = async () => {
+        try {
+            console.log('🟡 Начинаем подготовку PDF...');
+            const { blob, filename } = await generatePDF({
+                deltaT,
+                totalFlow,
+                maxHead,
+                cards,
+                results,
+                projectName,
+                asBlob: true,
+            });
+
+            const path = `${user.id}/temp/${filename}`;
+            const storageRef = ref(storage, path);
+            await uploadBytes(storageRef, blob);
+            const url = await getDownloadURL(storageRef);
+
+            console.log('✅ PDF готов, ссылка:', url);
+
+            setShareUrl(url);
+            setShareRef(storageRef);
+            setShowShareModal(true);
+        } catch (err) {
+            console.error('❌ Ошибка подготовки PDF:', err);
+            alert('Не удалось подготовить PDF.');
+        }
+    };
+
     return (
         <div className="max-w-10xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-wrap justify-center sm:justify-start gap-4 items-start mb-4">
@@ -298,7 +351,7 @@ const LoopCardList = () => {
                 <FlowRateChartCard data={results} />
             </div>
 
-            <div className="flex flex-wrap justify-center sm:justify-start gap-4 items-start pl-6">
+            <div className="flex flex-wrap justify-center sm:justify-start gap-4 items-start pl-4">
                 <TempDeltaCard value={deltaT} onChange={setDeltaT} />
 
                 <div className="bg-white shadow rounded-xl p-2 h-[75px] w-full max-w-[220px] flex items-center justify-center">
@@ -320,7 +373,7 @@ const LoopCardList = () => {
                     </div>
                 </div>
 
-                <div className="flex gap-4 w-full justify-center sm:justify-start mb-4">
+                <div className="flex gap-4 w-full justify-center sm:justify-start">
                     <button
                         onClick={() =>
                             generatePDF({
@@ -343,18 +396,19 @@ const LoopCardList = () => {
                     >
                         Сохранить
                     </button>
+                </div>
 
+                <div className="w-full flex justify-center sm:justify-start">
                     <button
-                        onClick={handleSharePDF}
-                        className="bg-gray-100 text-gray-800 font-semibold text-sm rounded-xl px-3 py-3 min-h-[70px] w-full max-w-[680px] flex items-center justify-center transition duration-200 hover:bg-gray-200 shadow"
+                        onClick={handlePrepareShare}
+                        className="bg-gray-100 text-gray-800 font-semibold text-sm rounded-xl px-3 min-h-[70px] w-full max-w-[695px] flex items-center justify-center transition duration-200 hover:bg-gray-200 shadow"
                     >
-                        Отправить
+                        Подготовить PDF для отправки
                     </button>
-
                 </div>
             </div>
 
-            <div className="flex flex-wrap justify-center sm:justify-start gap-4 mb-3 ml-7 mt-2">
+            <div className="flex flex-wrap justify-center sm:justify-start gap-4 mb-3 ml-4 mt-5">
                 {cards.map((card, index) => (
                     <LoopCard key={index} index={index} data={card} updateData={updateCard} removeData={removeCard} />
                 ))}
@@ -366,7 +420,7 @@ const LoopCardList = () => {
                 </button>
             </div>
 
-            <div className="flex flex-wrap justify-center sm:justify-start gap-4 ml-7">
+            <div className="flex flex-wrap justify-center sm:justify-start gap-4 ml-4">
                 {results.map((res, index) => (
                     <ResultCard
                         key={index}
@@ -394,6 +448,48 @@ const LoopCardList = () => {
                                     <span className="text-sm text-gray-700">{folder.name}</span>
                                 </div>
                             ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+            {showShareModal && (
+                <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50 px-4">
+                    <div className="bg-white border border-black rounded-xl p-4 w-full max-w-md text-center shadow-xl">
+                        <h2 className="text-lg font-semibold mb-4 text-gray">PDF готов к отправке</h2>
+                        <button
+                            onClick={async () => {
+                                try {
+                                    if (navigator.share) {
+                                        await navigator.share({
+                                            title: 'PDF отчет из GaldDesign',
+                                            text: 'Ссылка на скачивание файла:',
+                                            url: shareUrl,
+                                        });
+
+                                        if (shareRef) await deleteObject(shareRef);
+                                        setShareUrl(null);
+                                        setShareRef(null);
+                                        setShowShareModal(false);
+                                    } else {
+                                        alert('Функция "Поделиться" недоступна.');
+                                    }
+                                } catch (err) {
+                                    console.error('Ошибка при шаринге:', err);
+                                    alert('Не удалось расшарить PDF.');
+                                }
+                            }}
+                            className="bg-gray-200 text-black font-semibold text-sm rounded-xl px-4 py-2 mb-3"
+                        >
+                            Поделиться PDF
+                        </button>
+
+                        <div>
+                            <button
+                                onClick={() => setShowShareModal(false)}
+                                className="text-gray-500 underline text-sm hover:text-gray-700"
+                            >
+                                Закрыть
+                            </button>
                         </div>
                     </div>
                 </div>
