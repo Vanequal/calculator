@@ -327,14 +327,15 @@ const LoopCardList = () => {
                 projectName,
                 asBlob: true,
             });
-
-            const path = `${user.id}/temp/${filename}`;
+    
+            const userId = user?.id || 'anonymous';
+            const path = `${userId}/temp/${filename}`;
             const storageRef = ref(storage, path);
             await uploadBytes(storageRef, blob);
             const url = await getDownloadURL(storageRef);
-
+    
             console.log('✅ PDF готов, ссылка:', url);
-
+    
             setShareUrl(url);
             setShareRef(storageRef);
             setShowShareModal(true);
@@ -343,6 +344,7 @@ const LoopCardList = () => {
             alert('Не удалось подготовить PDF.');
         }
     };
+    
 
     return (
         <div className="max-w-10xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -375,20 +377,25 @@ const LoopCardList = () => {
 
                 <div className="flex gap-4 w-full justify-center sm:justify-start">
                     <button
-                        onClick={() =>
-                            generatePDF({
+                        onClick={async () => {
+                            const doc = await generatePDF({
                                 deltaT,
                                 totalFlow,
                                 maxHead,
                                 cards,
                                 results,
                                 projectName,
-                            })
-                        }
+                            });
+
+                            if (doc && typeof doc.save === 'function') {
+                                doc.save(`report-${Date.now()}.pdf`);
+                            }
+                        }}
                         className="bg-gray-100 text-gray-800 font-semibold text-sm rounded-xl px-3 py-3 min-h-[70px] w-full max-w-[340px] flex items-center justify-center transition duration-200 hover:bg-gray-200 shadow"
                     >
                         Скачать отчет PDF
                     </button>
+
 
                     <button
                         onClick={() => setShowSaveModal(true)}
