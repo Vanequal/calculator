@@ -327,15 +327,15 @@ const LoopCardList = () => {
                 projectName,
                 asBlob: true,
             });
-    
+
             const userId = user?.id || 'anonymous';
             const path = `${userId}/temp/${filename}`;
             const storageRef = ref(storage, path);
             await uploadBytes(storageRef, blob);
             const url = await getDownloadURL(storageRef);
-    
+
             console.log('✅ PDF готов, ссылка:', url);
-    
+
             setShareUrl(url);
             setShareRef(storageRef);
             setShowShareModal(true);
@@ -344,7 +344,7 @@ const LoopCardList = () => {
             alert('Не удалось подготовить PDF.');
         }
     };
-    
+
 
     return (
         <div className="max-w-10xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -353,7 +353,7 @@ const LoopCardList = () => {
                 <FlowRateChartCard data={results} />
             </div>
 
-            <div className="flex flex-wrap justify-center sm:justify-start gap-4 items-start pl-4">
+            <div className="flex flex-wrap justify-center sm:justify-start gap-4 items-center sm:items-start px-4">
                 <TempDeltaCard value={deltaT} onChange={setDeltaT} />
 
                 <div className="bg-white shadow rounded-xl p-2 h-[75px] w-full max-w-[220px] flex items-center justify-center">
@@ -398,11 +398,18 @@ const LoopCardList = () => {
 
 
                     <button
-                        onClick={() => setShowSaveModal(true)}
+                        onClick={() => {
+                            if (!user) {
+                                alert('Чтобы сохранить отчёт, войдите в аккаунт.');
+                                return;
+                            }
+                            setShowSaveModal(true);
+                        }}
                         className="bg-gray-100 text-gray-800 font-semibold text-sm rounded-xl px-3 py-3 min-h-[70px] w-full max-w-[340px] flex items-center justify-center transition duration-200 hover:bg-gray-200 shadow"
                     >
                         Сохранить
                     </button>
+
                 </div>
 
                 <div className="w-full flex justify-center sm:justify-start">
@@ -415,7 +422,7 @@ const LoopCardList = () => {
                 </div>
             </div>
 
-            <div className="flex flex-wrap justify-center sm:justify-start gap-4 mb-3 ml-4 mt-5">
+            <div className="flex flex-wrap justify-center sm:justify-start gap-4 mb-3 mt-5 px-4 sm:ml-4">
                 {cards.map((card, index) => (
                     <LoopCard key={index} index={index} data={card} updateData={updateCard} removeData={removeCard} />
                 ))}
@@ -427,7 +434,7 @@ const LoopCardList = () => {
                 </button>
             </div>
 
-            <div className="flex flex-wrap justify-center sm:justify-start gap-4 ml-4">
+            <div className="flex flex-wrap justify-center sm:justify-start gap-4 px-4 sm:ml-4">
                 {results.map((res, index) => (
                     <ResultCard
                         key={index}

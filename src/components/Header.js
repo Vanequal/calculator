@@ -29,7 +29,7 @@ const Header = () => {
       <div className="flex flex-col w-full max-w-[1200px] px-4">
 
         {/* Верхняя часть: логотип + кнопки */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between items-center gap-2 mb-3">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between items-center gap-4 mb-3">
           <img src={Logo} alt="Logo" className="w-15 h-12" />
 
           <div className="flex flex-wrap gap-2 items-center justify-center">
@@ -93,12 +93,11 @@ const Header = () => {
           <hr className="h-[1.5px] w-full bg-gray-400" />
         </div>
 
-        {/* MOBILE nav */}
         <div className="sm:hidden w-full">
           <hr className="h-[1.5px] w-full bg-gray-400" />
 
           <div className="flex items-center justify-center py-3 gap-4">
-            {/* Бумеранг влево */}
+
             <button onClick={handlePrev} className="w-6 h-6">
               <div className="w-full h-full border-t-2 border-r-2 border-gray-500 transform rotate-[-135deg] scale-75" />
             </button>
@@ -110,7 +109,6 @@ const Header = () => {
               {navItems[activeIndex].label}
             </span>
 
-            {/* Бумеранг вправо */}
             <button onClick={handleNext} className="w-6 h-6">
               <div className="w-full h-full border-t-2 border-r-2 border-gray-500 transform rotate-[45deg] scale-75" />
             </button>
