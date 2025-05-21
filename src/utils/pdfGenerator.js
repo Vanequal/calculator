@@ -265,6 +265,9 @@ export const generatePDF = async ({ deltaT, totalFlow, maxHead, cards, results, 
       blob,
       filename: `report-${Date.now()}.pdf`,
     };
+  } else {
+    return doc; 
   }
+  
   
 };
