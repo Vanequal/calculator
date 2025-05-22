@@ -12,7 +12,7 @@ const Header = () => {
   const navItems = [
     { label: 'Напольное отопление', path: '/' },
     { label: 'Радиаторное отопление', path: '/radiator' },
-    { label: 'Водоснабжение', path: '/water' },
+    { label: 'Водоснабжение', path: '/watersupplies' },
     { label: 'Котельная', path: '/boiler' },
   ];
   const [activeIndex, setActiveIndex] = useState(0);
