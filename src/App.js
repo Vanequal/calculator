@@ -10,6 +10,7 @@ import AwaitingConfirmationModal from './components/AwaitingConfirmationModal';
 import AddProjectCard from './components/AddProjectCard';
 
 import { supabase } from './supabase';
+import LoopCardListTwo from './components/LoopCardListTwo';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -45,6 +46,7 @@ const App = () => {
             <Routes>
               <Route path="/" element={<LoopCardList />} />
               <Route path="/projects" element={<AddProjectCard />} />
+              <Route path="/watersupplies" element={<LoopCardListTwo />} />
             </Routes>
           </div>
         </main>

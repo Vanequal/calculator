@@ -85,7 +85,7 @@ const Header = () => {
             <div className="w-px h-9 bg-gray-400" />
             <span>Радиаторное отопление</span>
             <div className="w-px h-9 bg-gray-400" />
-            <span>Водоснабжение</span>
+            <span className='cursor-pointer' onClick={() => navigate("/watersupplies")}>Водоснабжение</span>
             <div className="w-px h-9 bg-gray-400" />
             <span>Котельная</span>
           </div>
