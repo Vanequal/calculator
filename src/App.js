@@ -11,6 +11,7 @@ import AddProjectCard from './components/AddProjectCard';
 
 import { supabase } from './supabase';
 import LoopCardListTwo from './components/LoopCardListTwo';
+import LoopCardListThree from './components/LoopCardListThree';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -47,6 +48,7 @@ const App = () => {
               <Route path="/" element={<LoopCardList />} />
               <Route path="/projects" element={<AddProjectCard />} />
               <Route path="/watersupplies" element={<LoopCardListTwo />} />
+              <Route path="/radiator" element={<LoopCardListThree />} />
             </Routes>
           </div>
         </main>

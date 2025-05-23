@@ -18,11 +18,17 @@ const Header = () => {
   const [activeIndex, setActiveIndex] = useState(0);
 
   const handlePrev = () => {
-    setActiveIndex((prev) => (prev - 1 + navItems.length) % navItems.length);
+    const newIndex = (activeIndex - 1 + navItems.length) % navItems.length;
+    setActiveIndex(newIndex);
+    navigate(navItems[newIndex].path);
   };
+  
   const handleNext = () => {
-    setActiveIndex((prev) => (prev + 1) % navItems.length);
+    const newIndex = (activeIndex + 1) % navItems.length;
+    setActiveIndex(newIndex);
+    navigate(navItems[newIndex].path);
   };
+  
 
   return (
     <header className="px-4 py-3 bg-gray w-full flex justify-center">
@@ -76,14 +82,13 @@ const Header = () => {
           </div>
         </div>
 
-        {/* DESKTOP nav */}
         <div className="relative w-full hidden sm:flex flex-col">
           <hr className="h-[1.5px] w-full bg-gray-400" />
 
           <div className="flex items-center text-sm text-gray-500 space-x-4 pl-2 py-2">
             <span className="cursor-pointer" onClick={() => navigate("/")}>Напольное отопление</span>
             <div className="w-px h-9 bg-gray-400" />
-            <span>Радиаторное отопление</span>
+            <span className='cursor-pointer' onClick={() => navigate("/radiator")}>Радиаторное отопление</span>
             <div className="w-px h-9 bg-gray-400" />
             <span className='cursor-pointer' onClick={() => navigate("/watersupplies")}>Водоснабжение</span>
             <div className="w-px h-9 bg-gray-400" />

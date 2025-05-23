@@ -159,21 +159,8 @@ const LoopCardListTwo = () => {
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-wrap justify-center sm:justify-start gap-3 mb-6">
-                {cards.map((card, index) => (
-                    <LoopCard key={index} index={index} data={card} updateData={updateCard} removeData={removeCard} />
-                ))}
-                <button onClick={addCard} className="bg-white shadow rounded-xl p-2 w-full max-w-[220px] h-[170px] flex items-center justify-center text-4xl text-green-600 hover:bg-green-50">+</button>
-            </div>
-
-            <div className="flex flex-wrap justify-center sm:justify-start gap-3 mb-6">
-                {results.map((res, index) => (
-                    <ResultCard key={index} index={index} name={res.name} room={res.room} mode={res.mode} />
-                ))}
-            </div>
-
-            <div className="flex flex-col gap-4 w-full items-center sm:items-start">
-                {/* Верхние две кнопки: Скачать + Сохранить */}
+              <div className="flex flex-col gap-4 w-full items-center sm:items-start">
+                
                 <div className="flex gap-4 w-full justify-center sm:justify-start">
                     <button
                         onClick={handleDownload}
@@ -206,6 +193,18 @@ const LoopCardListTwo = () => {
                 </div>
             </div>
 
+            <div className="flex flex-wrap justify-center sm:justify-start gap-3 mb-6 mt-6 ">
+                {cards.map((card, index) => (
+                    <LoopCard key={index} index={index} data={card} updateData={updateCard} removeData={removeCard} />
+                ))}
+                <button onClick={addCard} className="bg-white shadow rounded-xl p-2 w-full max-w-[220px] h-[170px] flex items-center justify-center text-4xl text-green-600 hover:bg-green-50">+</button>
+            </div>
+
+            <div className="flex flex-wrap justify-center sm:justify-start gap-3 mb-6">
+                {results.map((res, index) => (
+                    <ResultCard key={index} index={index} name={res.name} room={res.room} mode={res.mode} />
+                ))}
+            </div>
 
             {showSaveModal && (
                 <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50 px-4">
